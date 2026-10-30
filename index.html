@@ -6,11 +6,507 @@
     <meta name="theme-color" content="#f8f5f1" />
     <meta name="description" content="Dashboard lokal untuk mencatat dan menganalisis penilaian SUS dan ASQ pada usability testing." />
     <title>Ukur — Dashboard ASQ & SUS</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css" />
-    <script type="module" src="./app.js"></script>
+    <style>
+:root {
+  font-family: system-ui, sans-serif;
+  color: #332016;
+  background: #f8f6f3;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --ink: #332016;
+  --ink-soft: #695449;
+  --muted: #907e73;
+  --accent: #a7522f;
+  --accent-dark: #873d22;
+  --accent-light: #f8e9df;
+  --cream: #f8f6f3;
+  --sand: #f5ece7;
+  --line: #e8ddd5;
+  --white: #fff;
+  --green: #37765d;
+  --green-light: #e8f4ec;
+  --red: #a9443b;
+  --red-light: #fff0ed;
+  --shadow: 0 14px 45px rgba(63, 34, 20, .045);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; min-width: 320px; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+button:disabled { opacity: .45; cursor: not-allowed; }
+svg { display: block; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid #d99a71; outline-offset: 3px; }
+.svg-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.app-layout { min-height: 100vh; display: flex; }
+.sidebar { width: 244px; flex: 0 0 244px; min-height: 100vh; background: #312016; color: #fdf4ec; display: flex; flex-direction: column; padding: 31px 16px 22px; position: sticky; top: 0; height: 100vh; z-index: 20; }
+.brand { display: flex; align-items: center; gap: 11px; padding: 0 11px 47px; }
+.brand-mark { display: grid; place-items: center; width: 39px; height: 39px; border-radius: 11px; background: #e6aa7f; color: #311f15; font-family: system-ui, sans-serif; font-weight: 800; font-size: 25px; letter-spacing: -3px; padding-right: 4px; }
+.brand-mark span { color: #8e4428; }
+.brand-name { font-family: system-ui, sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -1.3px; line-height: 1; }
+.brand-dot, .mobile-brand span { color: #e4a879; }
+.brand-name small { display: block; margin-top: 7px; color: #a99486; font-family: system-ui, sans-serif; font-size: 9px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+.sidebar-label { padding: 0 15px 12px; color: #947f72; font-size: 10px; font-weight: 800; letter-spacing: .16em; }
+.nav-list { display: grid; gap: 5px; }
+.nav-item { width: 100%; display: flex; align-items: center; gap: 13px; padding: 13px 15px; border: 0; border-radius: 10px; color: #cfbeb2; background: transparent; text-align: left; font-size: 13px; font-weight: 600; transition: background .18s, color .18s, transform .18s; }
+.nav-item:hover { background: #493329; color: #fff; transform: translateX(2px); }
+.nav-item.active { background: #62412e; color: #fff; box-shadow: inset 3px 0 #e7ae82; }
+.nav-item svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.7; fill: none; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
+.sidebar-bottom { margin-top: auto; }
+.privacy-note { display: flex; gap: 10px; background: #432d21; border: 1px solid #5a3e2e; border-radius: 12px; padding: 14px 11px; }
+.privacy-icon { color: #e6aa7f; font-size: 19px; line-height: 1.1; }
+.privacy-note strong { font-size: 11px; }
+.privacy-note p { color: #bba89b; font-size: 10px; line-height: 1.5; margin: 5px 0 0; }
+.sidebar-foot { color: #8c7769; font-size: 10px; padding: 17px 12px 0; }
+.sidebar-foot span { margin: 0 5px; }
+
+.main-area { flex: 1; min-width: 0; }
+.topbar { height: 69px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 0 clamp(22px, 4.5vw, 64px); background: rgba(255,255,255,.83); border-bottom: 1px solid #eee6e0; }
+.topbar-label { font-size: 10px; color: #95867c; letter-spacing: .14em; font-weight: 800; }
+.topbar-right { display: flex; align-items: center; gap: 7px; color: #755e51; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.live-dot { width: 7px; height: 7px; background: #79ad7d; border-radius: 50%; box-shadow: 0 0 0 3px #e5f1e4; }
+.mobile-brand { display: none; }
+.main-content { max-width: 1540px; margin: 0 auto; padding: 36px clamp(22px, 4.5vw, 64px) 70px; }
+
+.page-head, .page-header { display: flex; align-items: end; justify-content: space-between; gap: 22px; margin: 0 0 28px; }
+.page-head > div, .page-header > div { min-width: 0; }
+.eyebrow, .section-kicker, .kicker { color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; margin: 0 0 10px; }
+h1, h2, h3, h4, p { margin-top: 0; }
+h1, h2, h3, h4 { font-family: system-ui, sans-serif; color: var(--ink); letter-spacing: -.045em; }
+.page-title, h1 { font-size: clamp(27px, 3vw, 38px); line-height: 1.13; font-weight: 800; margin: 0 0 9px; }
+.page-subtitle, .page-description { color: var(--ink-soft); font-size: 13px; line-height: 1.65; margin: 0; }
+.section-title, h2 { font-size: 19px; line-height: 1.3; font-weight: 800; margin: 0; }
+.section-subtitle { color: var(--muted); font-size: 12px; margin: 5px 0 0; }
+.section-head, .card-head { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin: 0 0 18px; }
+.section-head { margin: 29px 0 16px; }
+.section-head:first-child { margin-top: 0; }
+.section-head a, .text-link { color: var(--accent); text-decoration: none; font-size: 12px; font-weight: 800; }
+.section-head a:hover, .text-link:hover { text-decoration: underline; }
+
+.btn, .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid transparent; border-radius: 9px; padding: 10px 15px; min-height: 39px; white-space: nowrap; background: var(--white); color: var(--ink); font-size: 12px; font-weight: 800; text-decoration: none; box-shadow: none; transition: background .18s, border .18s, transform .18s, box-shadow .18s; }
+.btn:hover, .button:hover { transform: translateY(-1px); }
+.btn svg, .button svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.btn-primary, .button-primary { color: #fff; background: var(--accent); border-color: var(--accent); box-shadow: 0 5px 12px rgba(156, 79, 43, .16); }
+.btn-primary:hover, .button-primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+.btn-secondary, .button-secondary, .btn-outline { border-color: var(--line); background: #fff; color: var(--ink-soft); }
+.btn-secondary:hover, .button-secondary:hover, .btn-outline:hover { border-color: #d3b9aa; background: #fffaf6; }
+.btn-ghost { background: transparent; color: var(--accent); }
+.btn-danger { color: var(--red); border-color: #f1d1cc; background: var(--red-light); }
+.btn-sm { min-height: 33px; padding: 7px 11px; font-size: 11px; }
+.icon-btn { display: grid; place-items: center; width: 32px; height: 32px; background: transparent; border: 1px solid transparent; border-radius: 7px; color: var(--ink-soft); }
+.icon-btn:hover { background: var(--sand); }
+.icon-btn svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+
+.card, .panel, .chart-card, .guide-card { background: var(--white); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); }
+.card, .panel, .chart-card { padding: 22px; }
+.card-soft { background: #fffaf7; }
+.card-head h3 { font-size: 15px; margin: 0; }
+.card-head p { font-size: 11px; color: var(--muted); margin: 4px 0 0; }
+.two-col, .dashboard-grid, .content-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, 1fr); gap: 18px; }
+.three-col { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.stat-grid, .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 15px; }
+.stat-card { min-width: 0; padding: 19px 20px; border: 1px solid var(--line); border-radius: 13px; background: #fff; box-shadow: var(--shadow); }
+.stat-card:nth-child(2) { background: #fff9f4; }
+.stat-card:nth-child(3) { background: #f5f8f3; }
+.stat-card:nth-child(4) { background: #f6f3f8; }
+.stat-label { color: var(--ink-soft); font-size: 11px; font-weight: 700; }
+.stat-value { font-family: system-ui, sans-serif; font-size: clamp(24px, 2.8vw, 34px); font-weight: 800; letter-spacing: -.06em; line-height: 1.25; margin: 8px 0 3px; }
+.stat-hint { color: var(--muted); font-size: 10px; line-height: 1.45; }
+.stat-icon { width: 33px; height: 33px; display: grid; place-items: center; border-radius: 9px; background: var(--accent-light); color: var(--accent); }
+.stat-icon svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+.stat-top { display: flex; justify-content: space-between; align-items: center; }
+.badge, .pill, .chip { display: inline-flex; align-items: center; gap: 5px; border: 1px solid #e6d4c7; background: #fcf2ec; color: #97502e; border-radius: 999px; padding: 5px 9px; font-size: 10px; font-weight: 800; white-space: nowrap; }
+.badge-green, .pill-green, .chip-green { background: var(--green-light); color: var(--green); border-color: #cde8d6; }
+.badge-muted, .pill-muted { background: #f5f3f0; color: var(--ink-soft); border-color: var(--line); }
+.badge-red { background: var(--red-light); color: var(--red); border-color: #f1d1cc; }
+
+.empty-state { text-align: center; padding: 46px 20px; color: var(--muted); }
+.empty-state .empty-icon { width: 52px; height: 52px; margin: 0 auto 14px; display: grid; place-items: center; border-radius: 15px; color: var(--accent); background: var(--accent-light); }
+.empty-state .empty-icon svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+.empty-state h3 { margin: 0 0 6px; font-size: 16px; }
+.empty-state p { margin: 0 auto 16px; max-width: 390px; font-size: 12px; line-height: 1.6; }
+.muted { color: var(--muted); }
+.small { font-size: 11px; }
+.helper, .hint { display: block; color: var(--muted); font-size: 10px; line-height: 1.45; margin-top: 6px; }
+
+.form-card { max-width: 1000px; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px; }
+.form-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.field, .form-field { display: flex; flex-direction: column; min-width: 0; }
+.field-full, .full-width { grid-column: 1 / -1; }
+.field label, .form-field label, label.field-label { display: block; margin: 0 0 7px; font-size: 11px; color: var(--ink); font-weight: 800; }
+.required { color: var(--accent); }
+.input, .select, .textarea, .field input, .field select, .field textarea, .form-field input, .form-field select, .form-field textarea { width: 100%; min-height: 40px; border: 1px solid #dfd4cc; border-radius: 8px; outline: none; background: #fff; padding: 10px 12px; color: var(--ink); font-size: 12px; transition: border .18s, box-shadow .18s; }
+.field textarea, .form-field textarea, .textarea { min-height: 88px; resize: vertical; }
+.input:focus, .select:focus, .textarea:focus, .field input:focus, .field select:focus, .field textarea:focus, .form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: #bb7956; box-shadow: 0 0 0 3px #f6e5da; }
+.field input::placeholder, .field textarea::placeholder, .input::placeholder { color: #b2a298; }
+.form-section { padding: 21px 0; border-top: 1px solid var(--line); }
+.form-section:first-of-type { border-top: 0; padding-top: 0; }
+.form-section-title { font-size: 15px; margin: 0 0 6px; }
+.form-section-desc { color: var(--muted); font-size: 11px; line-height: 1.55; margin: 0 0 17px; }
+.form-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 9px; border-top: 1px solid var(--line); padding-top: 20px; }
+
+.question-list { display: grid; gap: 12px; }
+.question-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 18px; padding: 15px 16px; border: 1px solid var(--line); border-radius: 10px; background: #fffdfa; }
+.question-row p { margin: 0; font-size: 12px; line-height: 1.55; }
+.question-row small { display: block; color: var(--muted); font-size: 10px; margin-bottom: 3px; }
+.question-row strong { color: var(--ink); }
+.question-number { color: var(--accent); font-weight: 800; }
+.scale-options { display: flex; align-items: center; gap: 5px; }
+.scale-options label { display: grid; place-items: center; width: 35px; height: 35px; border: 1px solid #dfd4cc; border-radius: 7px; background: #fff; color: var(--ink-soft); font-size: 12px; font-weight: 800; cursor: pointer; transition: background .18s, color .18s, border .18s; }
+.scale-options input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.scale-options label:has(input:checked) { background: var(--accent); border-color: var(--accent); color: #fff; }
+.scale-options label:hover { border-color: var(--accent); }
+.scale-options label:has(input:focus-visible) { outline: 3px solid #d99a71; outline-offset: 2px; }
+.scale-caption { display: flex; justify-content: space-between; color: var(--muted); font-size: 10px; margin-top: 8px; }
+.answer-grid, .rating-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.rating-option { position: relative; }
+.rating-option input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.rating-option span { display: grid; place-items: center; min-width: 34px; height: 34px; padding: 0 7px; border: 1px solid #dfd4cc; border-radius: 7px; font-size: 12px; font-weight: 700; color: var(--ink-soft); background: #fff; cursor: pointer; }
+.rating-option input:checked + span { background: var(--accent); color: #fff; border-color: var(--accent); }
+.rating-option input:focus-visible + span { outline: 3px solid #d99a71; outline-offset: 2px; }
+.rating-option span:hover { border-color: var(--accent); }
+
+.table-wrap { width: 100%; overflow: auto; }
+.data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 11px; white-space: nowrap; }
+.data-table th { background: #faf5f0; color: #8e7668; font-size: 10px; font-weight: 800; letter-spacing: .035em; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+.data-table td { padding: 14px; border-bottom: 1px solid #f1e9e3; color: var(--ink-soft); }
+.data-table tr:last-child td { border-bottom: 0; }
+.data-table tbody tr:hover { background: #fffaf7; }
+.data-table td strong { color: var(--ink); }
+.table-actions { display: flex; align-items: center; gap: 5px; }
+.toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0 0 16px; }
+.toolbar-left, .toolbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.search-input { min-width: 220px; }
+
+.bar-chart { display: grid; gap: 13px; }
+.bar-row { display: grid; grid-template-columns: minmax(85px, 1fr) minmax(0, 4fr) 38px; gap: 12px; align-items: center; font-size: 11px; }
+.bar-label { color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { height: 10px; background: #f3ece7; border-radius: 99px; overflow: hidden; }
+.bar-fill { height: 100%; min-width: 2px; background: linear-gradient(90deg, #dba37d, #a65a36); border-radius: inherit; }
+.bar-value { color: var(--ink); font-weight: 800; text-align: right; }
+.progress-track { height: 8px; border-radius: 99px; background: #eee5df; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--accent); border-radius: inherit; }
+.score-ring { width: 155px; height: 155px; display: grid; place-items: center; margin: 3px auto 18px; border-radius: 50%; background: conic-gradient(var(--accent) var(--score, 0%), #f1e8e2 0); }
+.score-ring::before { content: ""; grid-area: 1 / 1; width: 127px; height: 127px; background: #fff; border-radius: 50%; }
+.score-ring > * { grid-area: 1 / 1; z-index: 1; text-align: center; }
+.score-ring strong { display: block; font-family: system-ui, sans-serif; font-size: 35px; line-height: 1; letter-spacing: -.07em; }
+.score-ring small { display: block; color: var(--muted); font-size: 10px; margin-top: 4px; }
+
+.guide-tabs, .tabs { display: flex; align-items: center; gap: 5px; padding: 4px; border-radius: 9px; background: #eee7e1; width: fit-content; margin-bottom: 20px; }
+.guide-tabs button, .tabs button { border: 0; background: transparent; border-radius: 7px; color: var(--ink-soft); font-size: 11px; font-weight: 800; padding: 9px 15px; }
+.guide-tabs button.active, .tabs button.active { background: #fff; color: var(--accent); box-shadow: 0 2px 6px #32201714; }
+.guide-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px; }
+.guide-card { overflow: hidden; }
+.guide-card-head { background: var(--sand); border-bottom: 1px solid #e0d0c6; padding: 17px 20px; }
+.guide-card-head h3 { font-size: 16px; margin: 0; }
+.guide-card-body { padding: 18px 20px 20px; font-size: 12px; line-height: 1.7; color: var(--ink-soft); }
+.guide-card-body p:last-child, .guide-card-body ul:last-child { margin-bottom: 0; }
+.guide-card-body strong { color: var(--ink); }
+.guide-card-body ul, .guide-card-body ol { padding-left: 20px; }
+.guide-card-body li + li { margin-top: 4px; }
+.formula { display: inline-block; padding: 17px 23px; border: 1px solid var(--line); border-radius: 9px; background: #faf9f7; color: var(--ink); font-family: Georgia, serif; font-size: 22px; white-space: nowrap; max-width: 100%; overflow-x: auto; }
+.note-box, .callout { background: #fff9f4; border: 1px solid #f0dfd2; border-left: 3px solid #c17a51; color: var(--ink-soft); border-radius: 8px; padding: 13px 16px; font-size: 11px; line-height: 1.6; }
+
+.modal-backdrop { position: fixed; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(31, 19, 13, .55); z-index: 80; }
+.modal { width: min(100%, 520px); max-height: min(90vh, 850px); overflow: auto; background: #fff; border-radius: 15px; box-shadow: 0 25px 80px #1d100b55; padding: 25px; }
+.modal-head { display: flex; align-items: start; justify-content: space-between; gap: 15px; margin-bottom: 18px; }
+.modal-head h2 { margin: 0 0 5px; }
+.modal-head p { color: var(--muted); font-size: 11px; line-height: 1.5; margin: 0; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+.toast { position: fixed; bottom: 22px; right: 22px; z-index: 100; color: #fff; background: #332016; border-radius: 9px; padding: 11px 16px; font-size: 12px; box-shadow: 0 10px 28px #2b160b35; transform: translateY(20px); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.error { background: var(--red); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+@media (max-width: 1100px) {
+  .sidebar { width: 210px; flex-basis: 210px; }
+  .stat-grid, .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 800px) {
+  .sidebar { width: 71px; flex-basis: 71px; padding: 22px 10px; }
+  .brand { padding: 0 5px 35px; }
+  .brand-name, .sidebar-label, .nav-item span, .sidebar-bottom { display: none; }
+  .nav-item { justify-content: center; padding: 13px; }
+  .nav-item svg { width: 20px; height: 20px; }
+  .two-col, .dashboard-grid, .content-grid, .guide-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .app-layout { display: block; padding-bottom: 61px; }
+  .sidebar { position: fixed; top: auto; bottom: 0; left: 0; right: 0; width: 100%; height: 61px; min-height: 0; padding: 7px 10px; background: #312016; border-radius: 0; }
+  .brand { display: none; }
+  .nav-list { display: flex; justify-content: space-around; gap: 3px; height: 100%; }
+  .nav-item { flex: 1; flex-direction: column; gap: 2px; padding: 5px 2px; border-radius: 6px; font-size: 9px; line-height: 1.1; }
+  .nav-item span { display: block; }
+  .nav-item svg { width: 17px; height: 17px; }
+  .nav-item.active { box-shadow: inset 0 2px #e7ae82; }
+  .topbar { height: 57px; padding: 0 19px; }
+  .topbar-label { display: none; }
+  .mobile-brand { display: block; font-family: system-ui, sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -.06em; }
+  .main-content { padding: 26px 17px 50px; }
+  .page-head, .page-header { align-items: start; flex-direction: column; gap: 15px; }
+  .page-title, h1 { font-size: 27px; }
+  .page-head > .btn, .page-header > .btn { width: 100%; }
+  .stat-grid, .stats-grid { gap: 9px; }
+  .stat-card { padding: 15px; }
+  .stat-value { font-size: 26px; }
+  .card, .panel, .chart-card { padding: 18px; }
+  .form-grid, .form-grid.three, .three-col { grid-template-columns: 1fr; }
+  .question-row { grid-template-columns: 1fr; gap: 11px; }
+  .scale-options label { flex: 1; }
+  .bar-row { grid-template-columns: 75px minmax(0, 1fr) 31px; gap: 7px; }
+  .guide-card-head { padding: 15px 17px; }
+  .guide-card-body { padding: 16px 17px; }
+  .toast { left: 17px; right: 17px; bottom: 76px; }
+}
+
+/* Dashboard components */
+.hero { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 181px; overflow: hidden; position: relative; padding: 28px 34px; border: 1px solid #d4b29e; border-radius: 15px; background: linear-gradient(108deg, #f7e5d8 0%, #f3e3d8 55%, #e9cfbd 100%); margin-bottom: 23px; }
+.hero::before { content: ""; position: absolute; right: 185px; top: -90px; width: 220px; height: 220px; border: 1px solid #ffffff70; border-radius: 50%; }
+.hero::after { content: ""; position: absolute; right: 100px; bottom: -130px; width: 250px; height: 250px; border: 1px solid #ffffff90; border-radius: 50%; }
+.hero-content { position: relative; z-index: 1; max-width: 610px; }
+.hero h1, .hero h2 { margin: 0 0 9px; font-size: clamp(24px, 2.7vw, 35px); line-height: 1.2; }
+.hero p { color: #715345; font-size: 12px; line-height: 1.65; max-width: 560px; margin: 0 0 17px; }
+.hero .eyebrow { color: #a65d3c; margin-bottom: 9px; }
+.hero-art { flex: 0 0 180px; position: relative; z-index: 1; height: 140px; display: grid; place-items: center; }
+.hero-art::before { content: ""; position: absolute; width: 126px; height: 126px; border-radius: 32px; transform: rotate(-15deg); background: #fff9f0a8; box-shadow: 0 16px 35px #aa78533d; }
+.hero-art::after { content: "↗"; position: relative; font-family: system-ui, sans-serif; font-size: 82px; font-weight: 800; line-height: 1; color: #a45b38; transform: rotate(-12deg); }
+.section-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr); gap: 18px; }
+.metric { min-width: 0; padding: 18px 20px; background: #fff; border: 1px solid var(--line); border-radius: 13px; box-shadow: var(--shadow); }
+.metric-label { display: block; color: var(--ink-soft); font-size: 11px; font-weight: 700; }
+.metric-value { display: block; color: var(--ink); font-family: system-ui, sans-serif; font-size: clamp(25px, 2.7vw, 34px); font-weight: 800; letter-spacing: -.06em; line-height: 1.2; margin: 9px 0 5px; }
+.metric-note { display: block; color: var(--muted); font-size: 10px; line-height: 1.45; }
+.pill-sus { color: #91522e; background: #fcf0e5; border-color: #f0d8c5; }
+.pill-asq { color: #47705a; background: #eaf4ec; border-color: #d0e6d5; }
+.tab-list { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; padding: 4px; border-radius: 9px; background: #efe8e3; width: fit-content; margin-bottom: 20px; }
+.tab { border: 0; border-radius: 7px; background: transparent; padding: 9px 14px; color: var(--ink-soft); font-size: 11px; font-weight: 800; }
+.tab:hover { color: var(--accent); }
+.tab.active, .tab[aria-selected="true"] { color: var(--accent); background: #fff; box-shadow: 0 2px 6px #32201714; }
+.question { padding: 16px 18px; background: #fffdfa; border: 1px solid var(--line); border-radius: 10px; }
+.question + .question { margin-top: 10px; }
+.question p { font-size: 12px; line-height: 1.55; margin-bottom: 10px; }
+.question small { color: var(--muted); font-size: 10px; }
+.notice { display: flex; gap: 9px; align-items: start; padding: 12px 14px; margin: 16px 0; border: 1px solid #eedac9; border-radius: 8px; background: #fff8f0; color: #775647; font-size: 11px; line-height: 1.55; }
+.notice svg { width: 16px; height: 16px; stroke: var(--accent); stroke-width: 1.8; fill: none; flex: 0 0 auto; }
+.modal-panel { width: min(100%, 520px); max-height: min(90vh, 850px); overflow: auto; background: #fff; border-radius: 15px; box-shadow: 0 25px 80px #1d100b55; padding: 25px; }
+.guide-formula { display: inline-block; max-width: 100%; overflow: auto; padding: 17px 23px; border: 1px solid var(--line); border-radius: 9px; background: #faf9f7; color: var(--ink); font-family: Georgia, serif; font-size: 22px; white-space: nowrap; }
+.chart-row { display: grid; grid-template-columns: minmax(70px, 1fr) minmax(0, 4fr) 40px; align-items: center; gap: 10px; margin: 12px 0; font-size: 11px; color: var(--ink-soft); }
+.chart-track { height: 10px; border-radius: 99px; overflow: hidden; background: #f3ece7; }
+.chart-fill { height: 100%; min-width: 2px; border-radius: inherit; background: linear-gradient(90deg, #dba37d, #a65a36); }
+.chart-row strong { text-align: right; color: var(--ink); }
+.activity-list { list-style: none; padding: 0; margin: 0; }
+.activity-list li { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 12px 0; border-bottom: 1px solid #f0e8e2; font-size: 11px; color: var(--ink-soft); }
+.activity-list li:last-child { border-bottom: 0; padding-bottom: 0; }
+.activity-list li:first-child { padding-top: 0; }
+.activity-list strong { color: var(--ink); }
+
+@media (max-width: 800px) {
+  .section-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .hero { padding: 24px 20px; min-height: 0; }
+  .hero-art { display: none; }
+  .hero h1, .hero h2 { font-size: 25px; }
+  .chart-row { grid-template-columns: 69px minmax(0, 1fr) 31px; gap: 6px; }
+}
+
+/* Exact application markup */
+.page-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; flex: 0 0 auto; }
+.hero-kicker { display: inline-flex; align-items: center; gap: 7px; color: #8d4d30; font-size: 10px; font-weight: 800; letter-spacing: .12em; margin-bottom: 12px; }
+.hero-kicker-dot { width: 7px; height: 7px; border-radius: 50%; background: #a75b38; box-shadow: 0 0 0 4px #e7c4ae; }
+.hero h2 em { color: #a65d3c; font-style: normal; }
+.hero-link { display: inline-flex; align-items: center; gap: 8px; padding: 0; border: 0; background: transparent; color: #823e25; font-size: 12px; font-weight: 800; }
+.hero-link:hover { text-decoration: underline; }
+.hero-link svg, .text-button svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.hero-art::before, .hero-art::after { content: none; }
+.art-circle { position: absolute; border-radius: 50%; border: 1px solid #fff9; }
+.circle-one { width: 215px; height: 215px; right: -35px; top: -40px; }
+.circle-two { width: 158px; height: 158px; right: 3px; top: -12px; }
+.art-card { position: absolute; display: flex; flex-direction: column; align-items: start; justify-content: center; border: 1px solid #fff; border-radius: 11px; background: #fffdfadf; box-shadow: 0 12px 28px #8153332c; }
+.art-card span { color: #a18b7a; font-size: 7px; font-weight: 800; letter-spacing: .11em; white-space: nowrap; }
+.art-card strong { color: #66341f; font-family: system-ui, sans-serif; font-size: 29px; line-height: 1.25; letter-spacing: -.06em; }
+.art-card small { color: #997e6b; font-size: 8px; font-weight: 700; }
+.art-card-one { width: 140px; height: 110px; right: 57px; top: 9px; padding: 15px; transform: rotate(-8deg); }
+.art-card-one i { position: absolute; right: 15px; bottom: 19px; width: 40px; height: 27px; border-bottom: 3px solid #cb936c; border-right: 3px solid #cb936c; border-radius: 45% 0 45% 0; transform: rotate(-20deg); }
+.art-card-two { width: 120px; height: 78px; right: 0; bottom: 0; padding: 12px; transform: rotate(8deg); }
+.art-card-two strong { color: #557d65; font-size: 23px; }
+.stat-index { color: #baa79c; font-family: system-ui, sans-serif; font-size: 10px; font-weight: 800; }
+.stat-icon-green { background: #e7f2e9; color: #4e8b6a; }
+.stat-icon-orange { background: #f9eadd; color: #bd784c; }
+.stat-icon-pink { background: #fae9e8; color: #bc7c78; }
+.stat-icon-purple { background: #f0eafa; color: #8b78a8; }
+.metric-value small { font-size: 12px; color: var(--muted); font-weight: 700; letter-spacing: 0; margin-left: 3px; }
+.stat-card .metric-note { margin: 5px 0 0; }
+.welcome-card { margin-top: 20px; }
+.empty-actions { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.section-grid { margin-top: 21px; }
+.section-grid .card-head h3, .recent-card .card-head h3 { font-size: 16px; }
+.section-grid .card-head p { line-height: 1.45; }
+.section-kicker { display: block; margin: 0 0 5px; }
+.card-badge { flex: 0 0 auto; padding: 5px 8px; border-radius: 6px; color: #9a6c51; background: #f8eee7; font-size: 10px; font-weight: 800; }
+.chart-empty { display: grid; place-items: center; min-height: 167px; text-align: center; color: #a29389; font-size: 11px; line-height: 1.5; border: 1px dashed #e8dcd3; border-radius: 9px; background: #fffdfa; padding: 20px; }
+.scenario-list { display: grid; gap: 3px; padding: 5px 0 0; }
+.scenario-list .chart-row { grid-template-columns: minmax(90px, 1.2fr) minmax(0, 2.3fr) 32px; gap: 11px; margin: 6px 0; }
+.scenario-list .chart-meta { min-width: 0; }
+.scenario-list .chart-meta strong { display: block; text-align: left; color: var(--ink); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.scenario-list .chart-meta span { display: block; color: var(--muted); font-size: 10px; margin-top: 3px; }
+.scenario-list .chart-row > b { color: var(--ink); font-size: 11px; text-align: right; }
+.scenario-list .chart-track { height: 8px; }
+.scenario-list .chart-fill { background: linear-gradient(90deg, #a2c6a9, #4f8a67); }
+.bar-chart { display: flex; align-items: stretch; justify-content: space-around; gap: 10px; min-height: 174px; padding: 8px 7px 0; }
+.bar-column { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: end; }
+.bar-count { color: var(--ink-soft); font-size: 11px; font-weight: 800; margin-bottom: 5px; }
+.bar-space { width: min(48px, 100%); height: 125px; display: flex; align-items: end; justify-content: center; border-bottom: 1px solid #e8ddd5; }
+.bar-chart .bar-value { width: 100%; min-height: 3px; border-radius: 5px 5px 0 0; background: linear-gradient(180deg, #dba37d, #a65a36); }
+.bar-column:nth-child(2) .bar-value { background: linear-gradient(180deg, #dfc199, #bd8954); }
+.bar-column:nth-child(3) .bar-value { background: linear-gradient(180deg, #a5bfa5, #628d70); }
+.bar-column:nth-child(4) .bar-value { background: linear-gradient(180deg, #b8b2d1, #82799f); }
+.bar-chart .bar-label { width: 100%; overflow: visible; text-align: center; white-space: normal; margin-top: 8px; color: var(--muted); font-size: 9px; }
+.recent-card { margin-top: 20px; }
+.text-button { display: inline-flex; align-items: center; gap: 5px; padding: 0; border: 0; background: transparent; color: var(--accent); font-size: 11px; font-weight: 800; white-space: nowrap; }
+.text-button:hover { color: var(--accent-dark); text-decoration: underline; }
+.activity-list { display: block; }
+.activity-item { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-top: 1px solid #f0e8e2; }
+.activity-avatar, .mini-avatar { flex: 0 0 auto; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: #ede8e3; color: #885838; font-family: system-ui, sans-serif; font-size: 11px; font-weight: 800; }
+.activity-info { min-width: 0; display: flex; flex-direction: column; gap: 3px; flex: 1; }
+.activity-info strong { font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.activity-info span { color: var(--muted); font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.activity-score { width: 44px; text-align: right; color: var(--ink); font-family: system-ui, sans-serif; font-size: 13px; }
+
+/* Input form */
+.entry-layout { display: grid; grid-template-columns: minmax(0, 1fr) 255px; align-items: start; gap: 19px; }
+.entry-card { min-width: 0; padding: 25px; }
+.entry-top { border-bottom: 1px solid var(--line); padding-bottom: 18px; }
+.entry-number { color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: .1em; margin-bottom: 14px; }
+.entry-number span { color: #c9b6a8; margin: 0 6px; }
+.entry-top .tab-list { margin: 0; }
+.tab span { display: inline-block; margin-left: 5px; color: #9d8b80; font-size: 10px; font-weight: 600; }
+.entry-card .form-section { padding: 22px 0; }
+.entry-card .form-section:first-of-type { border-top: 0; }
+.participant-picker { display: flex; align-items: end; gap: 10px; }
+.participant-picker .field { flex: 1; }
+.participant-picker .btn { height: 40px; }
+.scenario-field { margin-bottom: 22px; }
+.scenario-field small { margin-top: 6px; color: var(--muted); font-size: 10px; }
+.scale-note, .rating-ends { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 10px; }
+.scale-note { background: #f9f4f0; border-radius: 8px; padding: 10px 12px; margin-bottom: 13px; }
+.questions { display: grid; gap: 9px; }
+.question { display: grid; grid-template-columns: 31px minmax(0, 1fr); gap: 13px; padding: 15px 16px; }
+.question + .question { margin-top: 0; }
+.question-number { font-family: system-ui, sans-serif; font-size: 13px; line-height: 1.4; }
+.question-body { min-width: 0; }
+.question-category { color: var(--accent); font-size: 10px; font-weight: 800; margin-bottom: 3px; }
+.question-text { display: block; color: var(--ink); font-size: 12px; font-weight: 600; line-height: 1.5; margin-bottom: 11px; }
+.rating-row { gap: 6px; }
+.rating-option span { min-width: 34px; height: 32px; }
+.rating-na span { min-width: 42px; }
+.rating-ends { max-width: 240px; margin-top: 6px; font-size: 9px; }
+.form-error { color: var(--red); font-size: 11px; font-weight: 700; min-height: 16px; margin: 0 0 4px; }
+.form-footer { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-top: 18px; border-top: 1px solid var(--line); }
+.form-footer p { color: var(--muted); font-size: 10px; line-height: 1.5; margin: 0; }
+.entry-aside { display: grid; gap: 12px; }
+.aside-card { padding: 20px; border: 1px solid var(--line); border-radius: 13px; background: #fff9f4; }
+.aside-card h3 { font-size: 15px; margin: 0 0 3px; }
+.aside-score { color: var(--accent); font-family: system-ui, sans-serif; font-size: 32px; font-weight: 800; letter-spacing: -.06em; margin: 9px 0; }
+.aside-card p { color: var(--ink-soft); font-size: 11px; line-height: 1.6; margin: 0 0 14px; }
+.aside-card > strong { display: block; font-size: 11px; margin-bottom: 7px; }
+.aside-divider { height: 1px; background: #e9d8ca; margin: 16px 0; }
+.aside-tip { display: flex; align-items: start; gap: 8px; padding: 13px 14px; border: 1px solid #d9e7d8; border-radius: 10px; background: #f0f8ef; color: #5c775b; font-size: 10px; line-height: 1.5; }
+.aside-tip svg { width: 15px; height: 15px; flex: 0 0 auto; stroke: currentColor; fill: none; stroke-width: 1.7; }
+
+/* Data table */
+.data-card { padding: 0; overflow: hidden; }
+.data-toolbar { display: flex; justify-content: space-between; align-items: end; gap: 17px; padding: 20px 22px; }
+.data-toolbar h3 { font-size: 16px; margin: 0; }
+.toolbar-controls { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.search-field { display: block; min-width: 205px; }
+.toolbar-controls .select { width: auto; min-width: 155px; }
+.table-person { display: flex; align-items: center; gap: 9px; }
+.table-person > span:last-child { display: flex; flex-direction: column; gap: 3px; }
+.table-person small, .table-scale { color: var(--muted); font-size: 10px; }
+.mini-avatar { width: 29px; height: 29px; border-radius: 8px; }
+.data-table td:last-child, .data-table th:last-child { width: 50px; text-align: center; }
+.icon-button { display: inline-grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 7px; background: transparent; color: var(--ink-soft); }
+.icon-button:hover { background: #f5eee8; }
+.icon-button.danger:hover { color: var(--red); background: var(--red-light); }
+.icon-button svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.data-bottom { padding: 13px 2px; }
+.data-bottom p { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 10px; line-height: 1.5; margin: 0; }
+.data-bottom svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.no-results { text-align: center; color: var(--muted); padding: 35px !important; }
+
+/* Guide */
+.guide-card { min-width: 0; padding: 24px; }
+.guide-heading { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
+.guide-index { color: #b9a293; font-family: system-ui, sans-serif; font-size: 12px; font-weight: 800; }
+.guide-card h2 { font-size: 19px; margin: 0 0 12px; }
+.guide-card h3 { font-size: 13px; margin: 0 0 10px; }
+.guide-card > p { color: var(--ink-soft); font-size: 11px; line-height: 1.7; margin: 0 0 15px; }
+.guide-rule { height: 1px; background: var(--line); margin: 17px 0; }
+.guide-questions { margin: 0 0 20px; padding-left: 19px; color: var(--ink-soft); font-size: 11px; line-height: 1.65; }
+.guide-questions li { padding-left: 2px; }
+.guide-questions li + li { margin-top: 7px; }
+.guide-questions li::marker { color: var(--accent); font-weight: 800; }
+.guide-questions strong { color: var(--ink); }
+.guide-formula { display: block; white-space: normal; margin: 0 0 16px; padding: 15px 17px; background: #fbf6f1; border: 1px solid #efdfd2; font-family: inherit; }
+.guide-formula span { display: block; color: var(--accent); font-size: 9px; font-weight: 800; letter-spacing: .13em; margin-bottom: 7px; }
+.guide-formula strong { display: block; font-family: Georgia, serif; font-size: 20px; line-height: 1.4; color: var(--ink); font-weight: 600; overflow-wrap: anywhere; }
+.guide-formula p { color: var(--ink-soft); font-size: 10px; line-height: 1.55; margin: 8px 0 0; }
+.guide-card > .guide-footnote { color: var(--ink-soft); font-size: 10px; margin-bottom: 12px; }
+.source-link { color: var(--accent); font-size: 10px; font-weight: 800; text-decoration: none; }
+.source-link:hover { text-decoration: underline; }
+.optional { color: var(--muted); font-weight: 500; }
+.modal-panel .field + .field { margin-top: 15px; }
+.toast.toast-error { background: var(--red); }
+
+@media (max-width: 1120px) {
+  .entry-layout { grid-template-columns: minmax(0, 1fr) 220px; }
+  .hero-art { flex-basis: 145px; }
+  .art-card-one { right: 32px; }
+}
+@media (max-width: 950px) {
+  .entry-layout { grid-template-columns: 1fr; }
+  .entry-aside { grid-template-columns: 1fr 1fr; align-items: start; }
+}
+@media (max-width: 800px) {
+  .page-actions { justify-content: flex-start; }
+  .data-toolbar { align-items: stretch; flex-direction: column; }
+  .toolbar-controls { justify-content: flex-start; }
+}
+@media (max-width: 600px) {
+  .page-actions { width: 100%; }
+  .page-actions .btn { flex: 1; }
+  .hero-art { display: none; }
+  .hero::before { right: -55px; }
+  .hero::after { right: -110px; }
+  .section-grid .card { min-width: 0; }
+  .scenario-list .chart-row { grid-template-columns: minmax(75px, 1fr) minmax(0, 1.5fr) 28px; gap: 7px; }
+  .activity-item { gap: 8px; }
+  .activity-avatar { width: 29px; height: 29px; }
+  .activity-score { width: 35px; font-size: 12px; }
+  .entry-card { padding: 19px; }
+  .participant-picker { align-items: stretch; flex-direction: column; }
+  .participant-picker .btn { width: 100%; }
+  .entry-aside { grid-template-columns: 1fr; }
+  .question { grid-template-columns: 24px minmax(0, 1fr); gap: 9px; padding: 13px 11px; }
+  .question-text { font-size: 11px; }
+  .rating-row { gap: 4px; }
+  .rating-option span { min-width: 31px; height: 31px; }
+  .rating-na span { min-width: 39px; }
+  .form-footer { align-items: stretch; flex-direction: column; }
+  .form-footer .btn { width: 100%; }
+  .scale-note { align-items: start; flex-direction: column; gap: 3px; }
+  .toolbar-controls { align-items: stretch; flex-direction: column; }
+  .search-field, .toolbar-controls .select { width: 100%; }
+  .guide-card { padding: 20px; }
+}
+
+    </style>
+    
   </head>
   <body>
     <svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -52,5 +548,364 @@
     </div>
     <div id="modal-root"></div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script>
+function scoreSUS(answers) {
+  if (!Array.isArray(answers) || answers.length !== 10 || answers.some((value) => !Number.isInteger(value) || value < 1 || value > 5)) return null;
+  const contribution = answers.reduce((sum, value, index) => sum + (index % 2 === 0 ? value - 1 : 5 - value), 0);
+  return contribution * 2.5;
+}
+
+function scoreASQ(answers) {
+  if (!Array.isArray(answers) || answers.length !== 3) return null;
+  const valid = answers.filter((value) => Number.isInteger(value) && value >= 1 && value <= 7);
+  return valid.length ? valid.reduce((sum, value) => sum + value, 0) / valid.length : null;
+}
+
+function average(values) {
+  const valid = values.filter((value) => typeof value === 'number' && Number.isFinite(value));
+  return valid.length ? valid.reduce((sum, value) => sum + value, 0) / valid.length : null;
+}
+
+
+const STORAGE_KEY = 'ukur-dashboard-v1';
+const SUS_QUESTIONS = [
+  'I think that I would like to use this system frequently.',
+  'I found the system unnecessarily complex.',
+  'I thought the system was easy to use.',
+  'I think that I would need the support of a technical person to be able to use this system.',
+  'I found the various functions in this system were well integrated.',
+  'I thought there was too much inconsistency in this system.',
+  'I would imagine that most people would learn to use this system very quickly.',
+  'I found the system very cumbersome to use.',
+  'I felt very confident using the system.',
+  'I needed to learn a lot of things before I could get going with this system.'
+];
+const ASQ_QUESTIONS = [
+  { label: 'Kemudahan menyelesaikan tugas', text: 'Overall, I am satisfied with the ease of completing the tasks in this scenario.' },
+  { label: 'Waktu yang diperlukan', text: 'Overall, I am satisfied with the amount of time it took to complete the tasks in this scenario.' },
+  { label: 'Informasi pendukung', text: 'Overall, I am satisfied with the support information (online help, messages, documentation) when completing the tasks.' }
+];
+
+const emptyData = () => ({ participants: [], sus: [], asq: [], demo: false });
+const icon = (name, className = '') => `<svg class="${className}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+const uid = () => globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+const number = (value, digits = 1) => value == null ? '—' : new Intl.NumberFormat('id-ID', { maximumFractionDigits: digits, minimumFractionDigits: digits }).format(value);
+const date = (value) => Number.isFinite(Date.parse(value)) ? new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(value)) : '—';
+const shortDate = (value) => Number.isFinite(Date.parse(value)) ? new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short' }).format(new Date(value)) : '—';
+
+function loadData() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    if (!parsed || !Array.isArray(parsed.participants) || !Array.isArray(parsed.sus) || !Array.isArray(parsed.asq)) return emptyData();
+    return parsed;
+  } catch { return emptyData(); }
+}
+
+let data = loadData();
+let page = 'dashboard';
+let instrument = 'sus';
+let selectedParticipantId = data.participants[0]?.id ?? '';
+let filter = 'all';
+let search = '';
+let toastTimer;
+let modalReturnFocus;
+
+function save() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); return true; }
+  catch { showToast('Penyimpanan browser penuh atau tidak tersedia. Ekspor data sebagai cadangan.', true); return false; }
+}
+
+function showToast(message, error = false) {
+  const toast = document.querySelector('#toast');
+  toast.textContent = message;
+  toast.classList.toggle('toast-error', error);
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 4500);
+}
+
+function person(id) { return data.participants.find((entry) => entry.id === id); }
+function assessmentCount() { return data.sus.length + data.asq.length; }
+function allAssessments() {
+  return [
+    ...data.sus.map((entry) => ({ ...entry, type: 'SUS', score: scoreSUS(entry.answers) })),
+    ...data.asq.map((entry) => ({ ...entry, type: 'ASQ', score: scoreASQ(entry.answers) }))
+  ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+}
+function scenarioGroups() {
+  const groups = new Map();
+  for (const entry of data.asq) {
+    const key = entry.scenario.trim().toLocaleLowerCase('id-ID');
+    if (!groups.has(key)) groups.set(key, { label: entry.scenario.trim(), scores: [] });
+    groups.get(key).scores.push(scoreASQ(entry.answers));
+  }
+  return [...groups.values()].map(({ label, scores }) => ({ label, score: average(scores), count: scores.length })).sort((a, b) => b.count - a.count);
+}
+
+function pageHead(eyebrow, title, subtitle, actions = '') {
+  return `<div class="page-head"><div><div class="eyebrow">${eyebrow}</div><h1 class="page-title">${title}</h1><p class="page-subtitle">${subtitle}</p></div><div class="page-actions">${actions}</div></div>`;
+}
+function demoBanner() {
+  return data.demo ? `<div class="notice demo-notice">${icon('info')}<span><strong>Data contoh sedang ditampilkan.</strong> Hapus data contoh sebelum mencatat hasil riset Anda.</span><button class="text-button" type="button" data-action="clear-demo">Hapus contoh</button></div>` : '';
+}
+function emptyState(title, text, action = '') {
+  return `<div class="empty-state"><div class="empty-icon">${icon('chart')}</div><h3>${title}</h3><p>${text}</p>${action}</div>`;
+}
+
+function renderDashboard() {
+  const susAverage = average(data.sus.map((entry) => scoreSUS(entry.answers)));
+  const asqAverage = average(data.asq.map((entry) => scoreASQ(entry.answers)));
+  const groups = scenarioGroups();
+  const recent = allAssessments().slice(0, 5);
+  const hasData = assessmentCount() > 0;
+  const distribution = [
+    { label: '0–49', min: 0, max: 49.99 }, { label: '50–69', min: 50, max: 69.99 },
+    { label: '70–84', min: 70, max: 84.99 }, { label: '85–100', min: 85, max: 100 }
+  ].map((bucket) => ({ ...bucket, count: data.sus.filter((entry) => { const score = scoreSUS(entry.answers); return score >= bucket.min && score <= bucket.max; }).length }));
+  const maxBucket = Math.max(1, ...distribution.map((item) => item.count));
+
+  return `${pageHead('OVERVIEW / WORKSPACE', 'Ringkasan penilaian', 'Pantau pengalaman pengguna setelah tugas dan secara keseluruhan.', `<button class="btn btn-secondary" data-action="export-csv" type="button">${icon('download')} Ekspor CSV</button><button class="btn btn-primary" data-nav="entry" type="button">${icon('plus')} Input penilaian</button>`)}
+    ${demoBanner()}
+    <section class="hero"><div class="hero-content"><span class="hero-kicker"><span class="hero-kicker-dot"></span> DASHBOARD RISET USABILITY</span><h2>Ubah jawaban menjadi <em>cerita yang jelas.</em></h2><p>Catat SUS dan ASQ, lihat pola setiap skenario, lalu bawa temuan Anda ke diskusi berikutnya.</p><button class="hero-link" data-nav="entry" type="button">Mulai penilaian ${icon('arrow')}</button></div><div class="hero-art" aria-hidden="true"><div class="art-circle circle-one"></div><div class="art-circle circle-two"></div><div class="art-card art-card-one"><span>USABILITY SCORE</span><strong>${susAverage == null ? '—' : number(susAverage)}</strong><small>SUS / 100</small><i></i></div><div class="art-card art-card-two"><span>SETELAH SKENARIO</span><strong>${asqAverage == null ? '—' : number(asqAverage, 2)}</strong><small>ASQ / 7</small></div></div></section>
+    <section class="stat-grid" aria-label="Statistik utama">
+      <div class="stat-card"><div class="stat-top"><span class="stat-icon stat-icon-purple">${icon('users')}</span><span class="stat-index">01</span></div><div class="metric-value">${data.participants.length}</div><div class="metric-label">Responden</div><p class="metric-note">Jumlah peserta yang tercatat</p></div>
+      <div class="stat-card"><div class="stat-top"><span class="stat-icon stat-icon-orange">${icon('chart')}</span><span class="stat-index">02</span></div><div class="metric-value">${susAverage == null ? '—' : number(susAverage)}<small>${susAverage == null ? '' : '/100'}</small></div><div class="metric-label">Rata-rata SUS</div><p class="metric-note">${data.sus.length} penilaian · lebih tinggi lebih baik</p></div>
+      <div class="stat-card"><div class="stat-top"><span class="stat-icon stat-icon-green">${icon('spark')}</span><span class="stat-index">03</span></div><div class="metric-value">${asqAverage == null ? '—' : number(asqAverage, 2)}<small>${asqAverage == null ? '' : '/7'}</small></div><div class="metric-label">Rata-rata ASQ</div><p class="metric-note">${data.asq.length} penilaian · lebih rendah lebih baik</p></div>
+      <div class="stat-card"><div class="stat-top"><span class="stat-icon stat-icon-pink">${icon('list')}</span><span class="stat-index">04</span></div><div class="metric-value">${groups.length}</div><div class="metric-label">Skenario tugas</div><p class="metric-note">Tugas yang telah dievaluasi</p></div>
+    </section>
+    ${!hasData ? `<section class="card welcome-card">${emptyState('Belum ada penilaian', 'Tambahkan responden dan isi kuesioner untuk melihat grafik dan ringkasan di sini.', `<div class="empty-actions"><button class="btn btn-primary" type="button" data-nav="entry">${icon('plus')} Input penilaian</button><button class="btn btn-secondary" type="button" data-action="load-demo">Lihat data contoh</button></div>`)}</section>` : ''}
+    <section class="section-grid">
+      <div class="card"><div class="card-head"><div><span class="section-kicker">PER SKENARIO</span><h3>Rata-rata ASQ</h3><p>Skor lebih kecil menunjukkan pengalaman lebih baik.</p></div><span class="card-badge">1–7</span></div>${groups.length ? `<div class="scenario-list">${groups.slice(0, 6).map((item) => `<div class="chart-row"><div class="chart-meta"><strong title="${esc(item.label)}">${esc(item.label)}</strong><span>${item.count} jawaban</span></div><div class="chart-track"><div class="chart-fill" style="width:${Math.max(3, item.score / 7 * 100)}%"></div></div><b>${number(item.score, 2)}</b></div>`).join('')}</div>` : `<div class="chart-empty">Grafik ASQ muncul setelah ada penilaian skenario.</div>`}</div>
+      <div class="card"><div class="card-head"><div><span class="section-kicker">DISTRIBUSI NILAI</span><h3>Sebaran SUS</h3><p>Jumlah penilaian pada setiap rentang skor.</p></div><span class="card-badge">0–100</span></div>${data.sus.length ? `<div class="bar-chart" role="img" aria-label="Distribusi skor SUS">${distribution.map((item) => `<div class="bar-column"><span class="bar-count">${item.count}</span><div class="bar-space"><div class="bar-value" style="height:${item.count ? Math.max(8, item.count / maxBucket * 100) : 2}%"></div></div><span class="bar-label">${item.label}</span></div>`).join('')}</div>` : `<div class="chart-empty">Distribusi SUS muncul setelah ada penilaian.</div>`}</div>
+    </section>
+    <section class="card recent-card"><div class="card-head"><div><span class="section-kicker">AKTIVITAS TERBARU</span><h3>Penilaian terakhir</h3></div><button class="text-button" type="button" data-nav="responses">Lihat semua ${icon('arrow')}</button></div>${recent.length ? `<div class="activity-list">${recent.map((entry) => `<div class="activity-item"><span class="activity-avatar">${esc((person(entry.participantId)?.name || '?').slice(0, 1).toUpperCase())}</span><div class="activity-info"><strong>${esc(person(entry.participantId)?.name || 'Responden terhapus')}</strong><span>${entry.type === 'ASQ' ? esc(entry.scenario) : 'System Usability Scale'} · ${shortDate(entry.createdAt)}</span></div><span class="pill ${entry.type === 'SUS' ? 'pill-sus' : 'pill-asq'}">${entry.type}</span><strong class="activity-score">${number(entry.score, entry.type === 'SUS' ? 1 : 2)}</strong></div>`).join('')}</div>` : `<div class="chart-empty">Belum ada aktivitas.</div>`}</section>`;
+}
+
+function participantOptions() { return data.participants.map((entry) => `<option value="${esc(entry.id)}" ${entry.id === selectedParticipantId ? 'selected' : ''}>${esc(entry.name)}${entry.group ? ` · ${esc(entry.group)}` : ''}</option>`).join(''); }
+function ratingChoices(name, count, labelId, includeNA = false) {
+  return `<div class="rating-row" role="radiogroup" aria-labelledby="${labelId}">${Array.from({ length: count }, (_, index) => `<label class="rating-option"><input type="radio" name="${name}" value="${index + 1}"/><span>${index + 1}</span></label>`).join('')}${includeNA ? `<label class="rating-option rating-na"><input type="radio" name="${name}" value="na"/><span>N/A</span></label>` : ''}</div>`;
+}
+function renderEntry() {
+  const sus = instrument === 'sus';
+  return `${pageHead('INPUT / PENILAIAN', 'Input penilaian', 'Satu responden dapat mengisi SUS dan ASQ untuk beberapa skenario.')} ${demoBanner()}
+    <div class="entry-layout"><section class="card entry-card"><div class="entry-top"><div class="entry-number">01 <span>/</span> PILIH INSTRUMEN</div><div class="tab-list" aria-label="Instrumen"><button class="tab ${sus ? 'active' : ''}" aria-pressed="${sus}" type="button" data-instrument="sus">SUS <span>10 pertanyaan</span></button><button class="tab ${!sus ? 'active' : ''}" aria-pressed="${!sus}" type="button" data-instrument="asq">ASQ <span>3 pertanyaan</span></button></div></div>
+      <div class="form-section"><div class="entry-number">02 <span>/</span> PILIH RESPONDEN</div><div class="participant-picker"><div class="field"><label for="respondent-select">Responden</label><select id="respondent-select" class="select" ${data.participants.length && !data.demo ? '' : 'disabled'}>${data.participants.length ? participantOptions() : '<option>Belum ada responden</option>'}</select></div><button class="btn btn-secondary" type="button" data-action="add-participant" ${data.demo ? 'disabled' : ''}>${icon('plus')} Tambah baru</button></div></div>
+      <form id="assessment-form" novalidate><div class="form-section"><div class="entry-number">03 <span>/</span> ${sus ? 'KUESIONER SUS' : 'SKENARIO & KUESIONER ASQ'}</div>${sus ? renderSUSForm() : renderASQForm()}</div><div id="form-error" class="form-error" role="alert"></div><div class="form-footer"><p>${sus ? 'Isi seluruh 10 jawaban untuk menghitung skor SUS.' : 'Jawaban N/A atau kosong tidak masuk ke rata-rata ASQ.'}</p><button class="btn btn-primary" type="submit" ${data.participants.length && !data.demo ? '' : 'disabled'}>${icon('check')} Simpan penilaian</button></div></form></section>
+      <aside class="entry-aside"><div class="aside-card"><span class="section-kicker">CARA MEMBACA</span><h3>${sus ? 'Skor SUS' : 'Skor ASQ'}</h3><div class="aside-score">${sus ? '0–100' : '1–7'}</div><p>${sus ? 'Semakin tinggi skor, semakin baik persepsi usability secara keseluruhan. Skor adalah indeks, bukan persentase.' : 'Semakin rendah skor, semakin puas responden terhadap skenario yang baru diselesaikan.'}</p><div class="aside-divider"></div><strong>${sus ? 'Rumus singkat' : 'Rumus singkat'}</strong><p>${sus ? 'Nomor ganjil: jawaban − 1. Nomor genap: 5 − jawaban. Jumlah kontribusi × 2,5.' : 'Rata-rata jawaban valid dari tiga pertanyaan. N/A dan kosong diabaikan.'}</p><button class="text-button" type="button" data-nav="guide">Buka panduan ${icon('arrow')}</button></div><div class="aside-tip">${icon('info')} <span>Gunakan kode atau nama responden yang konsisten agar hasil mudah ditelusuri.</span></div></aside></div>`;
+}
+function renderSUSForm() {
+  return `<div class="scale-note"><span>1 = sangat tidak setuju</span><span>5 = sangat setuju</span></div><div class="questions">${SUS_QUESTIONS.map((question, index) => `<div class="question"><div class="question-number">${String(index + 1).padStart(2, '0')}</div><div class="question-body"><div class="question-text" id="sus-label-${index}">${esc(question)}</div>${ratingChoices(`sus-${index}`, 5, `sus-label-${index}`)}<div class="rating-ends"><span>Sangat tidak setuju</span><span>Sangat setuju</span></div></div></div>`).join('')}</div>`;
+}
+function renderASQForm() {
+  return `<div class="field scenario-field"><label for="scenario">Nama skenario / tugas <span class="required">*</span></label><input id="scenario" class="input" name="scenario" placeholder="Contoh: Mencari dan membeli produk" maxlength="100" required /><small>Isi satu formulir untuk setiap skenario yang dikerjakan responden.</small></div><div class="scale-note"><span>1 = sangat setuju / paling puas</span><span>7 = sangat tidak setuju / paling tidak puas</span></div><div class="questions">${ASQ_QUESTIONS.map((item, index) => `<div class="question"><div class="question-number">${String(index + 1).padStart(2, '0')}</div><div class="question-body"><div class="question-category">${esc(item.label)}</div><div class="question-text" id="asq-label-${index}">${esc(item.text)}</div>${ratingChoices(`asq-${index}`, 7, `asq-label-${index}`, true)}<div class="rating-ends"><span>Sangat setuju</span><span>Sangat tidak setuju</span></div></div></div>`).join('')}</div>`;
+}
+
+function responseRows(entries) {
+  return entries.map((entry) => `<tr><td><div class="table-person"><span class="mini-avatar">${esc((person(entry.participantId)?.name || '?').slice(0, 1).toUpperCase())}</span><span><strong>${esc(person(entry.participantId)?.name || 'Responden terhapus')}</strong><small>${esc(person(entry.participantId)?.group || 'Tanpa kelompok')}</small></span></div></td><td><span class="pill ${entry.type === 'SUS' ? 'pill-sus' : 'pill-asq'}">${entry.type}</span></td><td>${entry.type === 'ASQ' ? esc(entry.scenario) : '<span class="muted">Keseluruhan sistem</span>'}</td><td><strong>${number(entry.score, entry.type === 'SUS' ? 1 : 2)}</strong><small class="table-scale">/ ${entry.type === 'SUS' ? '100' : '7'}</small></td><td>${date(entry.createdAt)}</td><td><button class="icon-button danger" type="button" data-action="delete-assessment" data-type="${entry.type}" data-id="${esc(entry.id)}" aria-label="Hapus penilaian ${entry.type} milik ${esc(person(entry.participantId)?.name || '')}">${icon('trash')}</button></td></tr>`).join('');
+}
+function filteredAssessments() {
+  return allAssessments().filter((entry) => (filter === 'all' || entry.type.toLowerCase() === filter) && (!search || `${person(entry.participantId)?.name || ''} ${person(entry.participantId)?.group || ''} ${entry.scenario || ''}`.toLocaleLowerCase('id-ID').includes(search.toLocaleLowerCase('id-ID'))));
+}
+function renderResponses() {
+  const entries = filteredAssessments();
+  return `${pageHead('DATA / PENILAIAN', 'Semua data', 'Kelola hasil yang tersimpan di browser perangkat ini.', `<button class="btn btn-secondary" type="button" data-action="import-json">Impor JSON</button><button class="btn btn-secondary" type="button" data-action="export-json">${icon('download')} Cadangan JSON</button><button class="btn btn-primary" type="button" data-action="export-csv">${icon('download')} Ekspor CSV</button>`)}${demoBanner()}
+    <section class="card data-card"><div class="data-toolbar"><div><span class="section-kicker">REKAP PENILAIAN</span><h3>${assessmentCount()} penilaian tercatat</h3></div><div class="toolbar-controls"><label class="search-field"><span class="sr-only">Cari penilaian</span><input id="search-input" class="input" type="search" placeholder="Cari responden atau skenario" value="${esc(search)}" /></label><select id="type-filter" class="select" aria-label="Filter instrumen"><option value="all" ${filter === 'all' ? 'selected' : ''}>Semua instrumen</option><option value="sus" ${filter === 'sus' ? 'selected' : ''}>SUS</option><option value="asq" ${filter === 'asq' ? 'selected' : ''}>ASQ</option></select></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Responden</th><th>Instrumen</th><th>Skenario</th><th>Skor</th><th>Tanggal</th><th><span class="sr-only">Aksi</span></th></tr></thead><tbody id="response-body">${entries.length ? responseRows(entries) : `<tr><td colspan="6" class="no-results">${assessmentCount() ? 'Tidak ada data yang cocok dengan pencarian.' : 'Belum ada penilaian. Mulai dari halaman Input penilaian.'}</td></tr>`}</tbody></table></div></section>
+    <div class="data-bottom"><p>${icon('info')} Data disimpan di browser ini. Gunakan cadangan JSON untuk memindahkan data ke perangkat lain.</p><input id="import-file" class="sr-only" type="file" accept=".json,application/json" /></div>`;
+}
+
+function renderGuide() {
+  return `${pageHead('METODE / PANDUAN', 'Panduan metode', 'Kenali tujuan, pertanyaan, dan cara menghitung kedua instrumen.')} ${demoBanner()}
+    <div class="guide-grid"><section class="guide-card"><div class="guide-heading"><span class="guide-index">01</span><span class="pill pill-sus">SUS</span></div><h2>System Usability Scale</h2><p>SUS mengevaluasi persepsi usability suatu sistem secara keseluruhan setelah penggunaan. Instrumen ini dikembangkan oleh John Brooke pada 1986 dan menggunakan 10 pernyataan dengan respons 1–5.</p><div class="guide-rule"></div><h3>10 pertanyaan standar</h3><ol class="guide-questions">${SUS_QUESTIONS.map((question) => `<li>${esc(question)}</li>`).join('')}</ol><div class="guide-formula"><span>RUMUS SUS</span><strong>Σ kontribusi × 2,5</strong><p>Nomor ganjil: jawaban − 1. Nomor genap: 5 − jawaban. Semua 10 item harus terisi.</p></div><p class="guide-footnote">Skor akhir 0–100 adalah indeks usability, bukan persentase pengguna yang puas.</p><a class="source-link" href="https://hci-studies.org/methods-and-measures/downloads/SUS_Brooke1996.pdf" target="_blank" rel="noopener noreferrer">Sumber: Brooke, SUS (1996) ↗</a></section>
+    <section class="guide-card"><div class="guide-heading"><span class="guide-index">02</span><span class="pill pill-asq">ASQ</span></div><h2>After-Scenario Questionnaire</h2><p>ASQ mengukur kepuasan segera setelah responden menyelesaikan satu tugas atau skenario. Tiga pernyataan menanyakan kemudahan tugas, waktu, dan informasi pendukung.</p><div class="guide-rule"></div><h3>3 pertanyaan standar</h3><ol class="guide-questions">${ASQ_QUESTIONS.map((item) => `<li><strong>${esc(item.label)}</strong><br/>${esc(item.text)}</li>`).join('')}</ol><div class="guide-formula"><span>RUMUS ASQ</span><strong>(Q₁ + Q₂ + Q₃) / jumlah jawaban valid</strong><p>Skala 1–7: 1 sangat setuju, 7 sangat tidak setuju. N/A dan item kosong tidak dihitung.</p></div><p class="guide-footnote">Semakin rendah rata-rata ASQ, semakin baik kepuasan responden pada skenario itu.</p><a class="source-link" href="https://www.researchgate.net/publication/230786769_Psychometric_evaluation_of_an_after-scenario_questionnaire_for_computer_usability_studies_The_ASQ" target="_blank" rel="noopener noreferrer">Sumber: Lewis, ASQ (1991) ↗</a></section></div>`;
+}
+
+function render() {
+  const app = document.querySelector('#app');
+  app.innerHTML = page === 'entry' ? renderEntry() : page === 'responses' ? renderResponses() : page === 'guide' ? renderGuide() : renderDashboard();
+  document.querySelectorAll('.nav-item').forEach((item) => { const active = item.dataset.nav === page; item.classList.toggle('active', active); item.setAttribute('aria-current', active ? 'page' : 'false'); });
+}
+function navigate(nextPage) { page = nextPage; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+function participantModal() {
+  modalReturnFocus = document.activeElement;
+  document.querySelector('#modal-root').innerHTML = `<div class="modal-backdrop" data-action="close-modal"><div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-head"><div><span class="section-kicker">RESPONDEN BARU</span><h2 id="modal-title">Tambah responden</h2></div><button class="icon-button" data-action="close-modal" aria-label="Tutup" type="button">${icon('close')}</button></div><form id="participant-form"><div class="field"><label for="participant-name">Nama atau kode responden <span class="required">*</span></label><input class="input" id="participant-name" name="name" maxlength="80" placeholder="Contoh: R01 atau Andi" required autocomplete="off" /></div><div class="field"><label for="participant-group">Kelompok / segmen <span class="optional">opsional</span></label><input class="input" id="participant-group" name="group" maxlength="80" placeholder="Contoh: Pengguna baru" autocomplete="off" /></div><div class="modal-actions"><button class="btn btn-secondary" type="button" data-action="close-modal">Batal</button><button class="btn btn-primary" type="submit">${icon('check')} Simpan responden</button></div></form></div></div>`;
+  document.querySelector('#participant-name')?.focus();
+}
+function closeModal() {
+  if (!document.querySelector('.modal-panel')) return;
+  document.querySelector('#modal-root').innerHTML = '';
+  modalReturnFocus?.focus?.();
+}
+
+function submitParticipant(form) {
+  if (data.demo) { showToast('Hapus data contoh sebelum memasukkan hasil riset.', true); return; }
+  const name = String(new FormData(form).get('name') || '').trim();
+  const group = String(new FormData(form).get('group') || '').trim();
+  if (!name) { form.querySelector('#participant-name').focus(); return; }
+  if (data.participants.some((entry) => entry.name.toLocaleLowerCase('id-ID') === name.toLocaleLowerCase('id-ID'))) { showToast('Nama atau kode responden sudah ada.', true); return; }
+  const participant = { id: uid(), name, group, createdAt: new Date().toISOString() };
+  data.participants.push(participant);
+  selectedParticipantId = participant.id;
+  if (!save()) { data.participants.pop(); return; }
+  closeModal(); render(); showToast('Responden berhasil ditambahkan.');
+}
+
+function submitAssessment(form) {
+  if (data.demo) { showToast('Hapus data contoh sebelum memasukkan hasil riset.', true); return; }
+  const error = document.querySelector('#form-error');
+  const setError = (message, selector) => { error.textContent = message; if (selector) form.querySelector(selector)?.focus(); };
+  if (!person(selectedParticipantId)) { setError('Tambahkan dan pilih responden terlebih dahulu.'); return; }
+  const formData = new FormData(form);
+  if (instrument === 'sus') {
+    const answers = SUS_QUESTIONS.map((_, index) => Number(formData.get(`sus-${index}`)));
+    const firstMissing = answers.findIndex((value) => !Number.isInteger(value) || value < 1 || value > 5);
+    if (firstMissing >= 0) { setError(`Jawab pertanyaan SUS nomor ${firstMissing + 1} terlebih dahulu.`, `[name="sus-${firstMissing}"]`); return; }
+    data.sus.push({ id: uid(), participantId: selectedParticipantId, answers, createdAt: new Date().toISOString() });
+    if (!save()) { data.sus.pop(); return; }
+    navigate('dashboard'); showToast(`Penilaian SUS tersimpan. Skor: ${number(scoreSUS(answers))}.`);
+  } else {
+    const scenario = String(formData.get('scenario') || '').trim();
+    if (!scenario) { setError('Isi nama skenario terlebih dahulu.', '#scenario'); return; }
+    const answers = ASQ_QUESTIONS.map((_, index) => { const value = formData.get(`asq-${index}`); return value && value !== 'na' ? Number(value) : null; });
+    if (scoreASQ(answers) == null) { setError('Isi minimal satu jawaban numerik ASQ. N/A saja tidak menghasilkan skor.', '[name="asq-0"]'); return; }
+    data.asq.push({ id: uid(), participantId: selectedParticipantId, scenario, answers, createdAt: new Date().toISOString() });
+    if (!save()) { data.asq.pop(); return; }
+    navigate('dashboard'); showToast(`Penilaian ASQ tersimpan. Skor: ${number(scoreASQ(answers), 2)}.`);
+  }
+}
+
+function safeCSV(value) {
+  const string = String(value ?? '');
+  const protectedValue = /^[=+\-@\t\r]/.test(string) ? `'${string}` : string;
+  return `"${protectedValue.replaceAll('"', '""')}"`;
+}
+function download(content, name, type) {
+  const url = URL.createObjectURL(new Blob([content], { type }));
+  const link = document.createElement('a'); link.href = url; link.download = name; link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function exportCSV() {
+  const columns = ['instrumen', 'responden', 'kelompok', 'skenario', 'tanggal', 'skor', ...Array.from({ length: 10 }, (_, i) => `q${i + 1}`)];
+  const rows = allAssessments().map((entry) => [entry.type, person(entry.participantId)?.name || '', person(entry.participantId)?.group || '', entry.scenario || '', entry.createdAt, entry.score, ...Array.from({ length: 10 }, (_, index) => index < entry.answers.length ? (entry.answers[index] ?? 'N/A') : '')]);
+  download('\uFEFF' + [columns, ...rows].map((row) => row.map(safeCSV).join(',')).join('\r\n'), 'ukur-asq-sus.csv', 'text/csv;charset=utf-8');
+  showToast('CSV berhasil diunduh.');
+}
+function exportJSON() { download(JSON.stringify({ format: 'ukur-dashboard-v1', exportedAt: new Date().toISOString(), data }, null, 2), 'ukur-asq-sus-backup.json', 'application/json'); showToast('Cadangan JSON berhasil diunduh.'); }
+
+async function importJSON(file) {
+  if (!file) return;
+  if (file.size > 2_000_000) { showToast('Berkas terlalu besar (maksimal 2 MB).', true); return; }
+  try {
+    const parsed = JSON.parse(await file.text());
+    const incoming = parsed?.format === 'ukur-dashboard-v1' ? parsed.data : parsed;
+    if (!incoming || !Array.isArray(incoming.participants) || !Array.isArray(incoming.sus) || !Array.isArray(incoming.asq)) throw new Error('Format tidak sesuai.');
+    const validDate = (value) => typeof value === 'string' && Number.isFinite(Date.parse(value));
+    const ids = new Set(incoming.participants.map((entry) => entry.id));
+    const assessmentIds = [...incoming.sus, ...incoming.asq].map((entry) => entry.id);
+    if (incoming.demo != null && typeof incoming.demo !== 'boolean') throw new Error('Penanda data contoh tidak valid.');
+    if (ids.size !== incoming.participants.length || incoming.participants.some((entry) => typeof entry.id !== 'string' || typeof entry.name !== 'string' || !entry.name.trim() || !validDate(entry.createdAt))) throw new Error('Data responden tidak valid.');
+    if (assessmentIds.some((id) => typeof id !== 'string') || new Set(assessmentIds).size !== assessmentIds.length) throw new Error('ID penilaian tidak valid.');
+    if (incoming.sus.some((entry) => typeof entry.id !== 'string' || !ids.has(entry.participantId) || !validDate(entry.createdAt) || scoreSUS(entry.answers) == null) || incoming.asq.some((entry) => typeof entry.id !== 'string' || !ids.has(entry.participantId) || !validDate(entry.createdAt) || typeof entry.scenario !== 'string' || !entry.scenario.trim() || !Array.isArray(entry.answers) || entry.answers.length !== 3 || entry.answers.some((value) => value !== null && (!Number.isInteger(value) || value < 1 || value > 7)) || scoreASQ(entry.answers) == null)) throw new Error('Data penilaian tidak valid.');
+    if (!confirm(`Impor akan mengganti ${assessmentCount()} penilaian di browser ini dengan ${incoming.sus.length + incoming.asq.length} penilaian dari berkas. Lanjutkan?`)) return;
+    const previous = data;
+    data = { participants: incoming.participants, sus: incoming.sus, asq: incoming.asq, demo: incoming.demo === true };
+    if (!save()) { data = previous; return; }
+    selectedParticipantId = data.participants[0]?.id ?? '';
+    render(); showToast('Data berhasil diimpor.');
+  } catch (error) { showToast(`Impor gagal: ${error.message}`, true); }
+}
+
+function loadDemo() {
+  if (assessmentCount() || data.participants.length) return;
+  const names = ['R01 · Alya', 'R02 · Bima', 'R03 · Citra', 'R04 · Danu', 'R05 · Eka', 'R06 · Fajar'];
+  const susAnswers = [
+    [4, 2, 4, 2, 5, 2, 4, 2, 4, 2], [5, 1, 4, 2, 4, 1, 5, 2, 4, 1],
+    [3, 3, 4, 2, 3, 3, 4, 3, 3, 2], [4, 2, 5, 1, 4, 2, 5, 1, 4, 2],
+    [3, 2, 3, 3, 4, 2, 4, 2, 3, 2], [4, 1, 4, 2, 4, 2, 4, 2, 5, 1]
+  ];
+  const scenarios = ['Mencari produk', 'Menyelesaikan pembayaran', 'Melacak pesanan'];
+  const asqAnswers = [
+    [[2, 2, 3], [3, 4, 3], [2, 3, 3]], [[1, 2, 2], [2, 3, 2], [1, 2, 2]],
+    [[3, 3, 4], [4, 4, 5], [3, 4, null]], [[2, 2, 2], [2, 3, 3], [2, 2, 3]],
+    [[3, 2, 3], [4, 3, 4], [3, null, 3]], [[2, 3, 2], [3, 3, 4], [2, 3, 2]]
+  ];
+  const now = Date.now();
+  const participants = names.map((name, index) => ({ id: uid(), name, group: index < 3 ? 'Pengguna baru' : 'Pengguna aktif', createdAt: new Date(now - (6 - index) * 86_400_000).toISOString() }));
+  data = {
+    participants,
+    sus: participants.map((participant, index) => ({ id: uid(), participantId: participant.id, answers: susAnswers[index], createdAt: new Date(now - (6 - index) * 86_400_000).toISOString() })),
+    asq: participants.flatMap((participant, index) => scenarios.map((scenario, scenarioIndex) => ({ id: uid(), participantId: participant.id, scenario, answers: asqAnswers[index][scenarioIndex], createdAt: new Date(now - (6 - index) * 86_400_000 + scenarioIndex * 60_000).toISOString() }))),
+    demo: true
+  };
+  selectedParticipantId = participants[0].id;
+  if (!save()) { data = emptyData(); return; }
+  render(); showToast('Data contoh dimuat. Hapus sebelum memasukkan hasil riset.');
+}
+function clearDemo() {
+  if (!data.demo) return;
+  if (!confirm('Hapus seluruh data contoh dari browser ini?')) return;
+  data = emptyData(); selectedParticipantId = ''; save(); render(); showToast('Data contoh dihapus.');
+}
+
+document.addEventListener('click', (event) => {
+  const nav = event.target.closest('[data-nav]');
+  if (nav) { navigate(nav.dataset.nav); return; }
+  const tab = event.target.closest('[data-instrument]');
+  if (tab) { instrument = tab.dataset.instrument; render(); return; }
+  const action = event.target.closest('[data-action]');
+  if (!action) return;
+  if (action.dataset.action === 'close-modal' && event.target.closest('.modal-panel') && !event.target.closest('button')) return;
+  switch (action.dataset.action) {
+    case 'add-participant': participantModal(); break;
+    case 'close-modal': closeModal(); break;
+    case 'export-csv': exportCSV(); break;
+    case 'export-json': exportJSON(); break;
+    case 'import-json': document.querySelector('#import-file')?.click(); break;
+    case 'load-demo': loadDemo(); break;
+    case 'clear-demo': clearDemo(); break;
+    case 'delete-assessment': {
+      if (!confirm('Hapus penilaian ini dari browser?')) break;
+      const array = action.dataset.type === 'SUS' ? data.sus : data.asq;
+      const index = array.findIndex((entry) => entry.id === action.dataset.id);
+      if (index >= 0) { const removed = array.splice(index, 1)[0]; if (!save()) array.splice(index, 0, removed); else { render(); showToast('Penilaian dihapus.'); } }
+      break;
+    }
+  }
+});
+document.addEventListener('submit', (event) => {
+  if (event.target.id === 'participant-form') { event.preventDefault(); submitParticipant(event.target); }
+  if (event.target.id === 'assessment-form') { event.preventDefault(); submitAssessment(event.target); }
+});
+document.addEventListener('change', (event) => {
+  if (event.target.id === 'respondent-select') selectedParticipantId = event.target.value;
+  if (event.target.id === 'type-filter') { filter = event.target.value; updateResponseTable(); }
+  if (event.target.id === 'import-file') importJSON(event.target.files?.[0]);
+});
+document.addEventListener('input', (event) => {
+  if (event.target.id === 'search-input') { search = event.target.value; updateResponseTable(); }
+  if (event.target.closest('#assessment-form')) { const error = document.querySelector('#form-error'); if (error) error.textContent = ''; }
+});
+document.addEventListener('keydown', (event) => {
+  const modal = document.querySelector('.modal-panel');
+  if (!modal) return;
+  if (event.key === 'Escape') { closeModal(); return; }
+  if (event.key !== 'Tab') return;
+  const focusable = [...modal.querySelectorAll('button:not(:disabled), input:not(:disabled), select:not(:disabled), [href]')];
+  if (!focusable.length) return;
+  const first = focusable[0], last = focusable[focusable.length - 1];
+  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+});
+function updateResponseTable() {
+  const body = document.querySelector('#response-body');
+  if (!body) return;
+  const entries = filteredAssessments();
+  body.innerHTML = entries.length ? responseRows(entries) : `<tr><td colspan="6" class="no-results">Tidak ada data yang cocok dengan pencarian.</td></tr>`;
+}
+
+render();
+
+    </script>
   </body>
 </html>
