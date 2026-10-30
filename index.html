@@ -855,7 +855,7 @@ document.addEventListener('click', (event) => {
   if (tab) { instrument = tab.dataset.instrument; render(); return; }
   const action = event.target.closest('[data-action]');
   if (!action) return;
-  if (action.dataset.action === 'close-modal' && event.target.closest('.modal-panel') && !event.target.closest('button')) return;
+  if (action.classList.contains('modal-backdrop') && event.target.closest('.modal-panel')) return;
   switch (action.dataset.action) {
     case 'add-participant': participantModal(); break;
     case 'close-modal': closeModal(); break;
