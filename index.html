@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f5f1" />
+    <meta name="description" content="Dashboard lokal untuk mencatat dan menganalisis penilaian SUS dan ASQ pada usability testing." />
+    <title>Ukur — Dashboard ASQ & SUS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+      <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v3h16v-3"/></symbol>
+      <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m14-14.87a4 4 0 0 1 0 7.75M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M7 16l4-5 3 2 5-7"/></symbol>
+      <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 1.8 6.2L20 11l-6.2 1.8L12 19l-1.8-6.2L4 11l6.2-1.8L12 3ZM19 18l.7 2.3L22 21l-2.3.7L19 24l-.7-2.3L16 21l2.3-.7L19 18Z"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18m-2 0-1 14H6L5 6m3 0V4h8v2M10 10v7m4-7v7"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19"/></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></symbol>
+    </svg>
+
+    <div class="app-layout">
+      <aside class="sidebar" aria-label="Navigasi utama">
+        <div class="brand"><span class="brand-mark">u<span>.</span></span><span class="brand-name">ukur<span class="brand-dot">.</span><small>Research dashboard</small></span></div>
+        <div class="sidebar-label">WORKSPACE</div>
+        <nav class="nav-list" aria-label="Halaman">
+          <button class="nav-item active" data-nav="dashboard" type="button"><svg><use href="#i-grid"/></svg><span>Ringkasan</span></button>
+          <button class="nav-item" data-nav="entry" type="button"><svg><use href="#i-plus"/></svg><span>Input penilaian</span></button>
+          <button class="nav-item" data-nav="responses" type="button"><svg><use href="#i-list"/></svg><span>Semua data</span></button>
+          <button class="nav-item" data-nav="guide" type="button"><svg><use href="#i-book"/></svg><span>Panduan metode</span></button>
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="privacy-note"><span class="privacy-icon">✳</span><div><strong>Data tetap di browser</strong><p>Tersimpan lokal di perangkat ini. Ekspor untuk membuat cadangan.</p></div></div>
+          <div class="sidebar-foot">ASQ + SUS <span>•</span> v1.0</div>
+        </div>
+      </aside>
+
+      <div class="main-area">
+        <header class="topbar"><div class="mobile-brand">ukur<span>.</span></div><span class="topbar-label">USABILITY RESEARCH / DASHBOARD</span><div class="topbar-right"><span class="live-dot"></span><span>Workspace lokal</span></div></header>
+        <main id="app" class="main-content" tabindex="-1"></main>
+      </div>
+    </div>
+    <div id="modal-root"></div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
